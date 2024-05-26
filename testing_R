@@ -1,0 +1,74 @@
+library(ggplot2)
+library(dplyr)
+
+
+# Reads from the csv file
+read_csv_file <- function(file_path) {
+  data <- read.csv(file_path)
+  return(data)
+}
+
+# Function to clean data
+clean_data <- function(data) {
+  # Convert any empty strings to NA
+  data[data == ""] <- NA
+  # This removes all the places with nothing in it leaving relevant data
+  data <- na.omit(data)
+  return(data)
+}
+
+
+# Function to get the most popular vehicle in the City of Bothell, my home town
+get_most_popular_vehicle_bothell <- function(data) {
+  # Filter data for City of Bothell
+  bothell_data <- data %>%
+    filter(City == "Bothell")
+  
+  # Get the most popular make and model
+  popular_vehicle <- bothell_data %>%
+    group_by(Make, Model) %>%
+    summarise(Count = n(),.groups = "drop") %>%
+    arrange(desc(Count)) %>%
+    slice(1)
+  
+  return(popular_vehicle)
+
+}
+# Function to get the most popular vehicle of my place of Birth, Kirkland!
+get_most_popular_vehicle_kirkland <- function(data) {
+    kirkland_data <- data%>%
+    filter(City == "Kirkland")
+
+    #Get the most popular make and model
+    popular_kirkland_vehicle <- kirkland_data %>%
+        group_by(Make,Model) %>%
+        summarise(Count = n(), .groups = "drop") %>%
+        arrange(desc(Count)) %>%
+        slice(1)
+
+    return(popular_kirkland_vehicle)
+}
+# Main function
+main <- function() {
+  # Define file path
+  file_path <- "Electric_Vehicle_Population_Data.csv"
+  
+  # Read CSV file
+  data <- read_csv_file(file_path)
+  
+  # Clean data
+  data <- clean_data(data)
+  
+  # Print first few rows of the data
+  print(head(data))
+  
+  
+  #Here's the data I was looking for
+  popular_vehicle <- get_most_popular_vehicle_bothell(data)
+  popular_kirkland_vehicle <- get_most_popular_vehicle_kirkland(data)
+  
+  print("Script executed successfully.")
+}
+
+# Run the main function
+main()
